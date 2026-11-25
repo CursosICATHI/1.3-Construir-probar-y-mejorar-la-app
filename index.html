@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Construir, probar y mejorar la app con cambios en lenguaje natural</title>
+<style>
+
+    @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&display=swap');
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Montserrat', sans-serif; background: #f0f2f5; color: #333; }
+    .slide { width: 100%; max-width: 1024px; margin: 20px auto; background: #fff; border-radius: 20px; box-shadow: 0 8px 30px rgba(0,0,0,0.12); overflow: hidden; min-height: 500px; display: flex; flex-direction: column; }
+    .slide-header { background: #3d5a96; padding: 18px 30px; display: flex; align-items: center; justify-content: space-between; }
+    .slide-header h2 { color: #fff; font-size: 20px; font-weight: 700; }
+    .slide-header .num { color: rgba(255,255,255,0.6); font-size: 14px; }
+    .slide-body { padding: 30px; flex: 1; }
+    .slide-footer { background: #2e4575; padding: 10px 30px; display: flex; justify-content: space-between; color: rgba(255,255,255,0.7); font-size: 12px; }
+    .portada { min-height: 90vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; position: relative; overflow: hidden; }
+    .portada-bg { position: absolute; inset: 0; background: linear-gradient(135deg, #3d5a96 0%, #e8755c 50%, #d05a7e 100%); z-index: 0; }
+    .portada .franja1 { position: absolute; bottom: 0; left: 0; right: 0; height: 12px; background: #e8755c; z-index: 1; }
+    .portada .franja2 { position: absolute; top: 0; right: 0; width: 25%; height: 8%; background: #d05a7e; z-index: 1; }
+    .portada .franja3 { position: absolute; bottom: 0; left: 0; width: 10%; height: 18%; background: #d05a7e; z-index: 1; }
+    .portada .franja4 { position: absolute; bottom: 0; right: 0; width: 15%; height: 12%; background: #e8755c; z-index: 1; }
+    .portada-content { position: relative; z-index: 2; padding: 40px; }
+    .portada .campus { color: rgba(255,255,255,0.7); font-size: 13px; letter-spacing: 4px; font-weight: 700; margin-bottom: 40px; }
+    .portada h1 { color: #fff; font-size: 48px; font-weight: 900; line-height: 1.2; margin-bottom: 8px; text-shadow: 3px 3px 12px rgba(0,0,0,0.2); }
+    .portada h1 span { display: block; font-size: 32px; font-weight: 600; }
+    .portada .tema-label { color: rgba(255,255,255,0.85); font-size: 18px; margin-top: 50px; }
+    .portada .tema { color: #fff; font-size: 28px; font-weight: 700; margin-top: 8px; }
+    .portada .instituto { color: rgba(255,255,255,0.75); font-size: 15px; margin-top: 50px; }
+    .portada .fecha { color: rgba(255,255,255,0.55); font-size: 13px; margin-top: 10px; }
+    h3 { color: #3d5a96; font-size: 22px; margin-bottom: 20px; }
+    h4 { color: #3d5a96; font-size: 18px; margin-bottom: 12px; }
+    .block { background: #fdf4f0; border-left: 5px solid #e8755c; padding: 18px 20px; border-radius: 0 10px 10px 0; margin: 15px 0; }
+    .block-title { font-weight: 700; color: #e8755c; margin-bottom: 6px; }
+    .block-blue { background: #eff2f8; border-left: 5px solid #3d5a96; }
+    .block-blue .block-title { color: #3d5a96; }
+    .block-pink { background: #fdf0f4; border-left: 5px solid #d05a7e; }
+    .block-pink .block-title { color: #d05a7e; }
+    .block-vino { background: #fdf0f2; border-left: 5px solid #691b31; }
+    .block-vino .block-title { color: #691b31; }
+    ul, ol { padding-left: 22px; line-height: 2; }
+    li { margin-bottom: 4px; }
+    .columns { display: flex; gap: 30px; }
+    .columns > div { flex: 1; }
+    table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+    th, td { border: 1px solid #ddd; padding: 10px 14px; text-align: left; }
+    th { background: #3d5a96; color: #fff; }
+    tr:nth-child(even) { background: #f8f9fc; }
+    .tag { display: inline-block; background: #3d5a96; color: #fff; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; margin-right: 6px; }
+    .center { text-align: center; }
+    .final { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 400px; text-align: center; }
+    .final h2 { color: #3d5a96; font-size: 32px; margin-bottom: 20px; }
+    .final p { color: #666; font-size: 18px; }
+    .nav-bar { max-width: 1024px; margin: 10px auto; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+    .nav-bar button { background: #3d5a96; color: #fff; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-family: 'Montserrat', sans-serif; font-weight: 600; font-size: 13px; transition: all 0.2s; }
+    .nav-bar button:hover { background: #e8755c; transform: translateY(-2px); }
+    .nav-bar button.activo { background: #d05a7e; }
+    .nav-controls { max-width: 1024px; margin: 10px auto; display: flex; gap: 10px; justify-content: center; }
+    .nav-controls button { background: #3d5a96; color: #fff; border: none; padding: 10px 28px; border-radius: 25px; cursor: pointer; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 15px; transition: all 0.2s; }
+    .nav-controls button:hover { background: #e8755c; transform: scale(1.05); }
+    .counter { max-width: 1024px; margin: 5px auto; text-align: center; font-size: 13px; color: #888; }
+    @media (max-width: 768px) {
+        .portada h1 { font-size: 32px; }
+        .portada h1 span { font-size: 24px; }
+        .portada .tema { font-size: 20px; }
+        .columns { flex-direction: column; }
+        .slide-body { padding: 20px; }
+        .slide-header h2 { font-size: 16px; }
+    }
+
+</style>
+</head>
+<body>
+
+<div class="nav-controls">
+    <button onclick="ant()">&#9664; Anterior</button>
+    <button onclick="sig()">Siguiente &#9654;</button>
+</div>
+<div class="counter" id="counter"></div>
+
+<div id="slides-container"></div>
+
+<script>
+const PORTADA = {
+    "etiqueta": "Tema 1.3 — Unidad 1",
+    "tema": "Construir, probar y mejorar<br>la app con cambios en<br>lenguaje natural",
+    "instituto": "Instituto de Capacitación para el Trabajo del Estado de Hidalgo"
+};
+const slides = [
+    {
+        "tipo": "portada"
+    },
+    {
+        "titulo": "Índice",
+        "num": "2 / 34",
+        "body": "\n    <div class=\"columns\" style=\"font-size:18px;line-height:2.2;\">\n        <div><strong style=\"color:#3d5a96;\">1. Construir</strong><br>\n        - El ciclo de trabajo<br>\n        - El prompt de construcción<br>\n        - La sección Build<br>\n        - Archivos y estructura<br><br>\n        <strong style=\"color:#3d5a96;\">2. Probar</strong><br>\n        - La vista previa<br>\n        - Datos reales<br>\n        - Tabla de pruebas</div>\n        <div><strong style=\"color:#3d5a96;\">3. Mejorar</strong><br>\n        - Cómo pedir cambios<br>\n        - Iteración controlada<br>\n        - Diseño móvil y textos<br><br>\n        <strong style=\"color:#3d5a96;\">4. Practicar</strong><br>\n        - Ejemplos completos<br>\n        - Checklist de calidad<br>\n        - Actividad y rúbrica<br><br>\n        <strong style=\"color:#3d5a96;\">5. Cerrar</strong><br>\n        - Resumen y autoevaluación</div>\n    </div>\n    "
+    },
+    {
+        "titulo": "Objetivo de aprendizaje",
+        "num": "3 / 34",
+        "body": "\n    <p style=\"font-size:18px;line-height:1.7;margin-bottom:18px;\">Al terminar podrás <strong>construir una app, probarla con datos reales y mejorarla pidiendo cambios en lenguaje natural</strong>, sin escribir código.</p>\n    <div class=\"block block-blue\">\n        <div class=\"block-title\">Lo que sabrás hacer</div>\n        <ul>\n            <li>Escribir el prompt de construcción con los cinco puntos.</li>\n            <li>Revisar la app generada y su estructura.</li>\n            <li>Probar cálculos y comportamientos con una tabla de pruebas.</li>\n            <li>Pedir mejoras claras y verificar cada cambio.</li>\n        </ul>\n    </div>\n    "
+    },
+    {
+        "titulo": "El ciclo de trabajo",
+        "num": "4 / 34",
+        "body": "\n    <div class=\"block block-blue center\" style=\"font-size:18px;\">\n        <strong>Describir → Construir → Probar → Corregir → Repetir</strong>\n    </div>\n    <div class=\"columns\" style=\"margin-top:18px;\">\n        <div>\n            <strong style=\"color:#3d5a96;\">Las dos primeras vueltas</strong>\n            <ul>\n                <li>La app se ve y funciona a medias.</li>\n                <li>Faltan campos y reglas.</li>\n                <li>Es normal: no es un error.</li>\n            </ul>\n        </div>\n        <div>\n            <strong style=\"color:#3d5a96;\">Las siguientes</strong>\n            <ul>\n                <li>Se ajustan cálculos y textos.</li>\n                <li>Se mejora el diseño.</li>\n                <li>Se prueban casos extremos.</li>\n            </ul>\n        </div>\n    </div>\n    <div class=\"block block-vino\">\n        La calidad aparece en la iteración, no en el primer intento.\n    </div>\n    "
+    },
+    {
+        "titulo": "Cómo piensa la IA cuando construye",
+        "num": "5 / 34",
+        "body": "\n    <div class=\"columns\">\n        <div>\n            <strong style=\"color:#3d5a96;\">Interpreta</strong>\n            <ul>\n                <li>El propósito.</li>\n                <li>Los datos de entrada.</li>\n                <li>Las reglas de cálculo.</li>\n                <li>El estilo visual.</li>\n            </ul>\n        </div>\n        <div>\n            <strong style=\"color:#3d5a96;\">Decide</strong>\n            <ul>\n                <li>Qué pantallas crear.</li>\n                <li>Qué campos mostrar.</li>\n                <li>Cómo validar.</li>\n                <li>Cómo organizar el código.</li>\n            </ul>\n        </div>\n    </div>\n    <div class=\"block block-pink\">\n        <div class=\"block-title\">Consecuencia</div>\n        Si una regla no está escrita, la IA la inventará. Cuanto más específico sea el prompt, menos supuestos habrá.\n    </div>\n    "
+    },
+    {
+        "titulo": "El prompt de construcción",
+        "num": "6 / 34",
+        "body": "\n    <table>\n        <tr><th>Punto</th><th>Qué escribir</th></tr>\n        <tr><td>Qué hace</td><td>La función principal, en una frase</td></tr>\n        <tr><td>Quién la usa</td><td>Dueño, empleado o cliente</td></tr>\n        <tr><td>Qué datos pide</td><td>Campos, listas y precios</td></tr>\n        <tr><td>Qué resultado muestra</td><td>Cálculos, totales y mensajes</td></tr>\n        <tr><td>Cómo se ve</td><td>Colores, tamaño, móvil</td></tr>\n    </table>\n    <div class=\"block block-blue\">\n        Agrega una sexta línea cuando sea importante: <strong>\"Si falta un dato, muéstralo como pendiente y no lo inventes.\"</strong>\n    </div>\n    "
+    },
+    {
+        "titulo": "Ejemplo de prompt inicial",
+        "num": "7 / 34",
+        "body": "\n    <div class=\"block block-vino\">\n        <div class=\"block-title\">Prompt completo</div>\n        \"Crea una app para cotizar servicios de un taller mecánico. La usa el encargado. Debe permitir agregar refacciones y mano de obra por separado, con cantidad y precio. Muestra subtotal de refacciones, subtotal de mano de obra, IVA y total. Si un precio falta, márcalo como pendiente. Diseño formal, letra clara, botón de imprimir.\"\n    </div>\n    <div style=\"margin-top:8px;\">\n        <span class=\"tag\">Función</span>\n        <span class=\"tag\">Usuario</span>\n        <span class=\"tag\">Datos</span>\n        <span class=\"tag\">Cálculo</span>\n        <span class=\"tag\">Vista</span>\n        <span class=\"tag\">Regla</span>\n    </div>\n    "
+    },
+    {
+        "titulo": "Qué genera AI Studio",
+        "num": "8 / 34",
+        "body": "\n    <ul style=\"font-size:17px;line-height:2.1;\">\n        <li>Una <strong>pantalla funcional</strong> con los campos que pediste.</li>\n        <li>Los <strong>botones</strong> y su comportamiento.</li>\n        <li>La <strong>lógica de cálculo</strong>.</li>\n        <li>Un <strong>diseño base</strong> con los colores indicados.</li>\n        <li>Una <strong>vista previa</strong> para probarla.</li>\n    </ul>\n    <div class=\"block block-blue\">\n        <div class=\"block-title\">Lo que no genera solo</div>\n        Tus reglas de negocio, tus precios reales y las decisiones comerciales. Eso lo pones tú.\n    </div>\n    "
+    },
+    {
+        "titulo": "La sección Build explicada",
+        "num": "9 / 34",
+        "body": "\n    <table>\n        <tr><th>Zona</th><th>Qué hace</th></tr>\n        <tr><td>Descripción</td><td>Donde escribes o corriges la instrucción</td></tr>\n        <tr><td>Vista previa</td><td>Muestra la app funcionando</td></tr>\n        <tr><td>Código</td><td>Los archivos que generó la plataforma</td></tr>\n        <tr><td>Historial</td><td>Versiones de tu app</td></tr>\n        <tr><td>Publicar</td><td>Genera el enlace para compartir</td></tr>\n    </table>\n    <div class=\"block\">\n        No necesitas entender el código. Sí conviene saber que existe y que se puede exportar.\n    </div>\n    "
+    },
+    {
+        "titulo": "Archivos y estructura",
+        "num": "10 / 34",
+        "body": "\n    <div class=\"columns\">\n        <div>\n            <strong style=\"color:#3d5a96;\">Qué hay dentro</strong>\n            <ul>\n                <li>Un archivo principal de la página.</li>\n                <li>Estilos de color y tipografía.</li>\n                <li>Lógica de los cálculos.</li>\n                <li>Imágenes y recursos.</li>\n            </ul>\n        </div>\n        <div>\n            <strong style=\"color:#3d5a96;\">Por qué importa</strong>\n            <ul>\n                <li>Si publicas, necesitas todos.</li>\n                <li>Si migras, debes llevarlos.</li>\n                <li>Si respaldas, cópialos juntos.</li>\n            </ul>\n        </div>\n    </div>\n    <div class=\"block block-pink\">\n        Nunca edites el código a ciegas. Pide el cambio en lenguaje natural y revisa la vista previa.\n    </div>\n    "
+    },
+    {
+        "titulo": "La vista previa",
+        "num": "11 / 34",
+        "body": "\n    <p style=\"font-size:17px;line-height:1.7;\">La vista previa es tu laboratorio. Muestra la app sin publicarla y se actualiza con cada cambio.</p>\n    <ul>\n        <li>Llena los campos como lo haría un cliente.</li>\n        <li>Prueba con números redondos y con decimales.</li>\n        <li>Cambia el ancho de la ventana para simular el celular.</li>\n        <li>Revisa que los botones hagan lo que dicen.</li>\n    </ul>\n    <div class=\"block block-blue\">\n        <div class=\"block-title\">Truco</div>\n        Abre la vista previa en una pestaña aparte para revisarla con calma mientras ajustas el prompt.\n    </div>\n    "
+    },
+    {
+        "titulo": "Probar con datos reales",
+        "num": "12 / 34",
+        "body": "\n    <ol style=\"font-size:17px;line-height:2.1;\">\n        <li>Elige un caso que ya resolviste a mano.</li>\n        <li>Captúralo en la app.</li>\n        <li>Compara el resultado con tu cálculo.</li>\n        <li>Repite con un caso extremo: cero, cantidad grande, precio vacío.</li>\n        <li>Anota cualquier diferencia.</li>\n    </ol>\n    <div class=\"block block-vino\">\n        <div class=\"block-title\">Regla</div>\n        Si no puedes comprobar el resultado con una calculadora, la app todavía no está lista.\n    </div>\n    "
+    },
+    {
+        "titulo": "Tabla de pruebas",
+        "num": "13 / 34",
+        "body": "\n    <table>\n        <tr><th>Caso</th><th>Entrada</th><th>Esperado</th><th>Obtenido</th></tr>\n        <tr><td>Básico</td><td>2 productos de 100</td><td>232</td><td>232</td></tr>\n        <tr><td>Cero</td><td>Cantidad 0</td><td>0</td><td>0</td></tr>\n        <tr><td>Decimales</td><td>1.5 kg a 80</td><td>139.20</td><td>139.2</td></tr>\n        <tr><td>Vacío</td><td>Sin producto</td><td>Aviso</td><td>Aviso</td></tr>\n        <tr><td>Grande</td><td>100 unidades</td><td>11,600</td><td>11,600</td></tr>\n    </table>\n    <div class=\"block block-blue\">\n        Esta tabla es la evidencia de tu práctica. Guárdala con capturas.\n    </div>\n    "
+    },
+    {
+        "titulo": "Cómo pedir mejoras",
+        "num": "14 / 34",
+        "body": "\n    <div class=\"columns\">\n        <div>\n            <strong style=\"color:#3d5a96;\">Funciona</strong>\n            <ul>\n                <li>\"Agrega un campo para el nombre del cliente.\"</li>\n                <li>\"Redondea el total a dos decimales.\"</li>\n                <li>\"Haz el botón más grande y verde.\"</li>\n            </ul>\n        </div>\n        <div>\n            <strong style=\"color:#3d5a96;\">No funciona</strong>\n            <ul>\n                <li>\"Mejóralo.\"</li>\n                <li>\"Hazlo más profesional.\"</li>\n                <li>\"Que se vea bonito.\"</li>\n            </ul>\n        </div>\n    </div>\n    <div class=\"block block-pink\">\n        Un cambio por mensaje. Si pides cinco cosas juntas, no sabrás cuál funcionó.\n    </div>\n    "
+    },
+    {
+        "titulo": "Ejemplo de mejora",
+        "num": "15 / 34",
+        "body": "\n    <div class=\"block\">\n        <div class=\"block-title\">Antes</div>\n        El botón de imprimir imprime toda la página, con menús y botones.\n    </div>\n    <div class=\"block block-blue\">\n        <div class=\"block-title\">Cambio solicitado</div>\n        \"Al imprimir, muestra solo la cotización: logotipo, datos del cliente, tabla de productos y totales. Oculta los botones y el menú.\"\n    </div>\n    <div class=\"block block-vino\">\n        <div class=\"block-title\">Después</div>\n        La impresión sale limpia, en una página, lista para entregar al cliente.\n    </div>\n    "
+    },
+    {
+        "titulo": "Iteración controlada",
+        "num": "16 / 34",
+        "body": "\n    <ol style=\"font-size:17px;line-height:2.1;\">\n        <li>Haz un cambio.</li>\n        <li>Prueba el caso afectado.</li>\n        <li>Prueba un caso que ya funcionaba.</li>\n        <li>Si todo bien, continúa.</li>\n        <li>Si algo se rompió, pide revertir ese cambio.</li>\n    </ol>\n    <div class=\"block block-blue\">\n        <div class=\"block-title\">Por qué probar lo que ya servía</div>\n        Un cambio de diseño puede romper un cálculo. La prueba de regresión evita sorpresas.\n    </div>\n    "
+    },
+    {
+        "titulo": "Cuándo volver a empezar",
+        "num": "17 / 34",
+        "body": "\n    <div class=\"columns\">\n        <div class=\"block block-blue\">\n            <div class=\"block-title\">Sigue iterando si...</div>\n            <ul>\n                <li>La estructura es correcta.</li>\n                <li>Solo fallan detalles.</li>\n                <li>Los cambios son pequeños.</li>\n            </ul>\n        </div>\n        <div class=\"block block-pink\">\n            <div class=\"block-title\">Empieza de nuevo si...</div>\n            <ul>\n                <li>La app quedó enredada.</li>\n                <li>Cada cambio rompe otra cosa.</li>\n                <li>El prompt inicial era confuso.</li>\n            </ul>\n        </div>\n    </div>\n    <div class=\"block\">\n        Volver a empezar con un prompt mejor suele tomar menos tiempo que reparar una base mala.\n    </div>\n    "
+    },
+    {
+        "titulo": "Diseño móvil",
+        "num": "18 / 34",
+        "body": "\n    <ul style=\"font-size:17px;line-height:2.1;\">\n        <li>La mayoría de tus clientes usará el celular.</li>\n        <li>Pide \"una sola columna en pantalla pequeña\".</li>\n        <li>Botones grandes, separados y con texto claro.</li>\n        <li>Letra legible sin hacer zoom.</li>\n        <li>Tablas que se conviertan en tarjetas.</li>\n    </ul>\n    <div class=\"block block-pink\">\n        <div class=\"block-title\">Prueba obligatoria</div>\n        Abre la vista previa en tu teléfono antes de decir que está lista.\n    </div>\n    "
+    },
+    {
+        "titulo": "Textos y tono",
+        "num": "19 / 34",
+        "body": "\n    <div class=\"columns\">\n        <div>\n            <strong style=\"color:#3d5a96;\">Pide textos claros</strong>\n            <ul>\n                <li>Frases cortas.</li>\n                <li>Sin tecnicismos.</li>\n                <li>Con el tono de tu negocio.</li>\n                <li>Con acentos correctos.</li>\n            </ul>\n        </div>\n        <div>\n            <strong style=\"color:#3d5a96;\">Ejemplo</strong>\n            <div class=\"block block-blue\" style=\"margin-top:0;\">\n                \"Cambia 'Subtotal' por 'Importe sin IVA' y 'Total' por 'Total a pagar'.\"\n            </div>\n        </div>\n    </div>\n    <div class=\"block\">\n        Los textos también se revisan: un error de ortografía en la app se nota tanto como un precio mal calculado.\n    </div>\n    "
+    },
+    {
+        "titulo": "Cálculos y validaciones",
+        "num": "20 / 34",
+        "body": "\n    <table>\n        <tr><th>Situación</th><th>Comportamiento esperado</th></tr>\n        <tr><td>Cantidad vacía</td><td>No calcula y muestra aviso</td></tr>\n        <tr><td>Precio cero</td><td>Permitido, pero avisa</td></tr>\n        <tr><td>Decimales</td><td>Dos decimales y redondeo correcto</td></tr>\n        <tr><td>IVA</td><td>Se calcula sobre el subtotal</td></tr>\n        <tr><td>Descuento</td><td>Se aplica antes del IVA</td></tr>\n    </table>\n    <div class=\"block block-vino\">\n        Escribe las reglas en el prompt: \"el descuento se aplica antes del IVA\". Si no, la IA elegirá por ti.\n    </div>\n    "
+    },
+    {
+        "titulo": "Errores al construir",
+        "num": "21 / 34",
+        "body": "\n    <table>\n        <tr><th>Error</th><th>Qué pasa</th><th>Solución</th></tr>\n        <tr><td>Prompt con todo</td><td>La app no se entiende</td><td>Una función por versión</td></tr>\n        <tr><td>No indicar reglas</td><td>Cálculos a criterio de la IA</td><td>Escribir las reglas</td></tr>\n        <tr><td>Copiar prompts ajenos</td><td>No encaja con el negocio</td><td>Adaptar con tus datos</td></tr>\n        <tr><td>Ignorar el celular</td><td>Se ve mal</td><td>Pedir diseño móvil</td></tr>\n    </table>\n    "
+    },
+    {
+        "titulo": "Errores al probar",
+        "num": "22 / 34",
+        "body": "\n    <table>\n        <tr><th>Error</th><th>Consecuencia</th><th>Solución</th></tr>\n        <tr><td>Probar un solo caso</td><td>Errores ocultos</td><td>Probar cinco casos</td></tr>\n        <tr><td>No probar cero</td><td>División o total raro</td><td>Incluir casos límite</td></tr>\n        <tr><td>No comparar a mano</td><td>Confiar en un resultado falso</td><td>Calculadora siempre</td></tr>\n        <tr><td>No probar en celular</td><td>Cliente no puede usarla</td><td>Revisar en el teléfono</td></tr>\n    </table>\n    "
+    },
+    {
+        "titulo": "Buenas prácticas de prompts",
+        "num": "23 / 34",
+        "body": "\n    <ul style=\"font-size:17px;line-height:2.1;\">\n        <li>Empieza con \"Crea una app que...\" y sigue con los cinco puntos.</li>\n        <li>Usa ejemplos con números reales.</li>\n        <li>Indica el orden de los cálculos.</li>\n        <li>Describe el diseño con palabras simples.</li>\n        <li>Pide una cosa por mensaje.</li>\n        <li>Guarda el prompt que funcionó.</li>\n    </ul>\n    <div class=\"block block-blue\">\n        Un buen prompt de construcción se lee como una receta: ingredientes, pasos y resultado esperado.\n    </div>\n    "
+    },
+    {
+        "titulo": "Guardar versiones",
+        "num": "24 / 34",
+        "body": "\n    <div class=\"columns\">\n        <div>\n            <strong style=\"color:#3d5a96;\">Antes de un cambio grande</strong>\n            <ul>\n                <li>Descarga o copia la versión actual.</li>\n                <li>Anota qué funciona.</li>\n                <li>Guarda el prompt usado.</li>\n            </ul>\n        </div>\n        <div>\n            <strong style=\"color:#3d5a96;\">Nombres sugeridos</strong>\n            <ul>\n                <li>cotizador_v1</li>\n                <li>cotizador_v2_impresion</li>\n                <li>cotizador_final</li>\n            </ul>\n        </div>\n    </div>\n    <div class=\"block block-pink\">\n        Si un cambio sale mal, vuelve a la versión anterior en lugar de reparar sobre el error.\n    </div>\n    "
+    },
+    {
+        "titulo": "Ejemplo completo: cotizador",
+        "num": "25 / 34",
+        "body": "\n    <ol style=\"font-size:16px;line-height:2;\">\n        <li><strong>Prompt:</strong> cotizador con productos, cantidad, IVA y total.</li>\n        <li><strong>Prueba 1:</strong> dos productos de 100 = 232.</li>\n        <li><strong>Mejora:</strong> campo de nombre y fecha.</li>\n        <li><strong>Prueba 2:</strong> nombre con acentos se muestra bien.</li>\n        <li><strong>Mejora:</strong> botón de imprimir solo la cotización.</li>\n        <li><strong>Prueba 3:</strong> la impresión sale en una página.</li>\n        <li><strong>Cierre:</strong> guarda versión final y capturas.</li>\n    </ol>\n    "
+    },
+    {
+        "titulo": "Ejemplo completo: menú",
+        "num": "26 / 34",
+        "body": "\n    <ol style=\"font-size:16px;line-height:2;\">\n        <li><strong>Prompt:</strong> menú con cinco platillos y precios.</li>\n        <li><strong>Prueba 1:</strong> dos platillos suman correctamente.</li>\n        <li><strong>Mejora:</strong> botones + y - para la cantidad.</li>\n        <li><strong>Prueba 2:</strong> bajar a cero quita el producto del total.</li>\n        <li><strong>Mejora:</strong> nota \"sin cebolla\" y envío por WhatsApp.</li>\n        <li><strong>Prueba 3:</strong> el mensaje incluye la nota y el total.</li>\n    </ol>\n    "
+    },
+    {
+        "titulo": "Checklist de calidad",
+        "num": "27 / 34",
+        "body": "\n    <ul style=\"font-size:17px;line-height:2.1;\">\n        <li>La app abre sin errores.</li>\n        <li>Todos los campos se pueden llenar.</li>\n        <li>Los cálculos coinciden con la prueba a mano.</li>\n        <li>Los casos límite están controlados.</li>\n        <li>El diseño se ve bien en celular.</li>\n        <li>Los textos están claros y sin errores.</li>\n        <li>No hay datos personales.</li>\n        <li>Guardé la versión final y las capturas.</li>\n    </ul>\n    "
+    },
+    {
+        "titulo": "Actividad práctica",
+        "num": "28 / 34",
+        "body": "\n    <p style=\"font-size:17px;margin-bottom:10px;\"><strong>Meta:</strong> construir y mejorar una app con al menos tres iteraciones.</p>\n    <ol style=\"font-size:16px;line-height:2;\">\n        <li>Escribe el prompt de construcción.</li>\n        <li>Genera la primera versión.</li>\n        <li>Prueba cinco casos y registra la tabla.</li>\n        <li>Pide tres mejoras, una por una.</li>\n        <li>Verifica después de cada mejora.</li>\n        <li>Entrega el prompt final, la tabla y capturas.</li>\n    </ol>\n    <div class=\"block block-blue\">\n        <div class=\"block-title\">Entregable</div>\n        Un PDF con el prompt inicial, las tres mejoras, la tabla de pruebas y las capturas antes y después.\n    </div>\n    "
+    },
+    {
+        "titulo": "Rúbrica de la actividad",
+        "num": "29 / 34",
+        "body": "\n    <table>\n        <tr><th>Criterio</th><th>Peso</th><th>Qué se observa</th></tr>\n        <tr><td>Prompt de construcción</td><td>25%</td><td>Incluye los cinco puntos</td></tr>\n        <tr><td>Funcionalidad</td><td>30%</td><td>Calcula y valida correctamente</td></tr>\n        <tr><td>Iteraciones</td><td>25%</td><td>Tres mejoras verificadas</td></tr>\n        <tr><td>Documentación</td><td>20%</td><td>Tabla de pruebas y capturas</td></tr>\n    </table>\n    "
+    },
+    {
+        "titulo": "Resumen",
+        "num": "30 / 34",
+        "body": "\n    <ul style=\"font-size:17px;line-height:2.2;\">\n        <li>Construir es describir con los cinco puntos y revisar el resultado.</li>\n        <li>Probar significa comparar con cálculos hechos a mano.</li>\n        <li>Mejorar es pedir un cambio a la vez y verificar.</li>\n        <li>El celular y los casos límite son parte de la prueba.</li>\n        <li>Guardar versiones evita perder lo que ya funcionaba.</li>\n    </ul>\n    <div class=\"block center\" style=\"margin-top:15px;\">\n        <div class=\"block-title\">Frase final</div>\n        <em>\"La app mejora cuando tú aprendes a pedir mejor.\"</em>\n    </div>\n    "
+    },
+    {
+        "titulo": "Autoevaluación",
+        "num": "31 / 34",
+        "body": "\n    <ol style=\"font-size:17px;line-height:2.3;\">\n        <li>¿Cuáles son los cinco puntos del prompt de construcción?</li>\n        <li>¿Por qué hay que probar casos límite?</li>\n        <li>¿Qué diferencia hay entre iterar y empezar de nuevo?</li>\n        <li>¿Cómo se comprueba un cálculo?</li>\n        <li>¿Qué debes guardar antes de un cambio grande?</li>\n    </ol>\n    "
+    },
+    {
+        "titulo": "Glosario",
+        "num": "32 / 34",
+        "body": "\n    <table style=\"font-size:14px;\">\n        <tr><th>Término</th><th>Significado</th></tr>\n        <tr><td>Iterar</td><td>Hacer cambios pequeños y probar después de cada uno.</td></tr>\n        <tr><td>Caso límite</td><td>Situación extrema: cero, vacío o número muy grande.</td></tr>\n        <tr><td>Regresión</td><td>Error que aparece en algo que ya funcionaba.</td></tr>\n        <tr><td>Validación</td><td>Regla que impide datos incorrectos.</td></tr>\n        <tr><td>Versión</td><td>Copia guardada de la app en un momento dado.</td></tr>\n    </table>\n    "
+    },
+    {
+        "titulo": "Recursos y consejos",
+        "num": "33 / 34",
+        "body": "\n    <div class=\"block block-blue\">\n        <div class=\"block-title\">Antes de pedir ayuda</div>\n        <ul>\n            <li>Escribe qué esperabas y qué obtuviste.</li>\n            <li>Adjunta una captura.</li>\n            <li>Indica el caso exacto que falla.</li>\n        </ul>\n    </div>\n    <div class=\"block\">\n        <div class=\"block-title\">Práctica recomendada</div>\n        Dedica 20 minutos diarios durante una semana. La velocidad llega con la repetición, no con la teoría.\n    </div>\n    "
+    },
+    {
+        "titulo": "Gracias por su atención",
+        "num": "34 / 34",
+        "body": "<div class=\"final\">\n            <h2>¿Dudas o comentarios?</h2>\n            <p>Participa en el foro del tema</p>\n            <p style=\"margin-top:30px;color:#3d5a96;font-weight:700;\">ICATHI 4.0 — Inteligencia Artificial para tu Negocio</p>\n        </div>"
+    }
+];
+
+let actual = 0;
+
+function renderSlide(i) {
+    const s = slides[i];
+    const c = document.getElementById('slides-container');
+    if (s.tipo === 'portada') {
+        c.innerHTML = '<div class="slide portada">' +
+            '<div class="portada-bg"></div>' +
+            '<div class="franja1"></div><div class="franja2"></div><div class="franja3"></div><div class="franja4"></div>' +
+            '<div class="portada-content">' +
+            '<div class="campus">CAMPUS VIRTUAL</div>' +
+            '<h1>Inteligencia Artificial<span>para tu Negocio</span></h1>' +
+            '<div class="tema-label">' + PORTADA.etiqueta + '</div>' +
+            '<div class="tema">' + PORTADA.tema + '</div>' +
+            '<div class="instituto">' + PORTADA.instituto + '</div>' +
+            '<div class="fecha">2026</div>' +
+            '</div></div>';
+    } else {
+        c.innerHTML = '<div class="slide">' +
+            '<div class="slide-header"><h2>' + s.titulo + '</h2><span class="num">' + s.num + '</span></div>' +
+            '<div class="slide-body">' + s.body + '</div>' +
+            '<div class="slide-footer"><span>ICATHI 4.0</span><span>' + s.num + '</span></div>' +
+            '</div>';
+    }
+    document.getElementById('counter').textContent = 'Diapositiva ' + (i + 1) + ' de ' + slides.length;
+    document.querySelectorAll('.nav-bar button').forEach((b, idx) => {
+        b.classList.toggle('activo', idx === i);
+    });
+}
+
+function sig() {
+    if (actual < slides.length - 1) { actual++; renderSlide(actual); }
+}
+function ant() {
+    if (actual > 0) { actual--; renderSlide(actual); }
+}
+
+// Nav bar
+document.addEventListener('DOMContentLoaded', () => {
+    const nav = document.createElement('div');
+    nav.className = 'nav-bar';
+    slides.forEach((_, i) => {
+        const b = document.createElement('button');
+        b.textContent = i + 1;
+        b.onclick = () => { actual = i; renderSlide(i); };
+        nav.appendChild(b);
+    });
+    document.body.insertBefore(nav, document.querySelector('.nav-controls'));
+    renderSlide(0);
+});
+</script>
+
+</body>
+</html>
